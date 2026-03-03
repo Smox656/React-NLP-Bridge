@@ -17,6 +17,7 @@ except Exception as e:
 
 def clean_review(text):
     text = text.lower()
+    text = re.sub(r'<br\s*/?>', ' ', text)
     text = text.translate(str.maketrans(string.punctuation, ' ' * len(string.punctuation)))
     text = re.sub(r'\s+', ' ', text).strip()
     return text  
@@ -45,12 +46,12 @@ def predict():
     prediction = model.predict(text_vectorized)
     probabilities = model.predict_proba(text_vectorized)
     
+    prob_positive = probabilities[0][1]
 
     return jsonify({
         'prediction': int(prediction[0]),
-        'probability': float(max(probabilities[0])),
+        'probability': float(prob_positive), 
         'sentiment': 'Positif' if prediction[0] == 1 else 'Négatif'
     })
-
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
